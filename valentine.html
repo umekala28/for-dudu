@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For Dudu 💌</title>
+
+  <!-- Reliable fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#ffe3ef;
+      --bg2:#ffd1e2;
+      --card: rgba(255,255,255,.82);
+      --ink:#222;
+      --shadow: 0 22px 70px rgba(0,0,0,.16);
+      --radius: 28px;
+      --script: "Great Vibes", cursive;
+      --body: "Cormorant Garamond", serif;
+      --pink1:#ff4d88;
+      --pink2:#ff7aa8;
+      --coal:#1f1f1f;
+      --coal2:#4b4b4b;
+    }
+
+    *{box-sizing:border-box}
+    body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(1200px 600px at 20% 20%, #fff 0%, transparent 60%),
+    radial-gradient(900px 500px at 80% 15%, #fff 0%, transparent 55%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding:24px;
+  color:var(--ink);
+}
+
+    /* floating hearts */
+    .heart{
+      position:absolute;
+      font-size:18px;
+      opacity:.55;
+      user-select:none;
+      pointer-events:none;
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.10));
+      z-index: 0;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(60px) translateX(0) rotate(0deg); opacity:0}
+      10%{opacity:.55}
+      to{ transform: translateY(-120vh) translateX(var(--drift)) rotate(360deg); opacity:0}
+    }
+
+    .app{
+      width:min(1040px, 100%);
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 44px 34px;
+      backdrop-filter: blur(14px);
+      position:relative;
+      overflow:hidden;
+      z-index: 2;
+    }
+
+    .stage{ display:none; text-align:center; }
+    .stage.active{ display:block; }
+
+    .fadeOut{ animation: fadeOut .35s ease forwards; }
+    .fadeIn{ animation: fadeIn .45s ease forwards; }
+    @keyframes fadeOut{ to{ opacity:0; transform: translateY(6px);} }
+    @keyframes fadeIn{ from{ opacity:0; transform: translateY(10px);} to{ opacity:1; transform: translateY(0);} }
+
+    .title{
+      font-family: var(--script);
+      font-size: clamp(56px, 6.2vw, 92px);
+      line-height: 1.0;
+      margin: 0;
+    }
+
+    .subtitle{
+      font-family: var(--body);
+      font-size: 20px;
+      font-weight: 600;
+      opacity:.88;
+      margin: 18px auto 0;
+      max-width: 64ch;
+    }
+
+    .hint{
+      font-family: var(--body);
+      margin-top: 26px;
+      font-size: 16px;
+      font-weight: 600;
+      opacity:.55;
+      letter-spacing: .02em;
+    }
+
+    /* Buttons */
+    .btnRow{
+      margin-top: 28px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
+      min-height: 60px;
+      position: relative;
+    }
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding: 12px 22px;
+      cursor:pointer;
+      font-family: var(--body);
+      font-size: 18px;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(0,0,0,.14);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    button:active{ transform: translateY(1px); }
+
+    .yes{
+      background: linear-gradient(135deg, var(--pink1), var(--pink2));
+      color:#fff;
+    }
+    .yes:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+
+    .no{
+      background: linear-gradient(135deg, var(--coal2), var(--coal));
+      color:#fff;
+      --nx: 0px;
+      --ny: 0px;
+      transform: translate(var(--nx), var(--ny));
+      transition: transform 140ms ease;
+    }
+
+    /* Lotto layout */
+    .lottoWrap{
+  margin-top: 22px;
+  display:grid;
+  grid-template-columns: 1.45fr 0.55fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.winsPanel{
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.08);
+
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;     /* ensures room */
+}
+
+.winItem .wTitle{
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.winItem .wDesc{
+  font-size: 14px;
+  line-height: 1.35;
+  opacity: .82;
+}
+.winsList{
+  list-style:none;
+  padding:0;
+  margin:0;
+
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  padding-right: 6px;    /* breathing room for scrollbar */
+}
+    .machine{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 24px;
+      box-shadow: 0 18px 46px rgba(0,0,0,.12);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+      text-align:left;
+    }
+
+    .machineTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom: 12px;
+    }
+
+    .machineTitle{
+      font-family: var(--body);
+      font-weight: 900;
+      font-size: 18px;
+      opacity:.9;
+      letter-spacing:.02em;
+    }
+
+    .slotFrame{
+  margin-top: 10px;
+  padding: 16px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,77,136,.12), rgba(255,255,255,.96));
+  border: 1px solid rgba(0,0,0,.10);
+  box-shadow: inset 0 10px 18px rgba(0,0,0,.05);
+ 
+}
+
+/* ADD THESE RIGHT BELOW */
+
+.slotFrame::-webkit-scrollbar{
+  height: 8px;
+}
+
+.slotFrame::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,.15);
+  border-radius: 999px;
+}
+.reelsRow{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 70px;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+}
+
+.reel{
+  height: 110px;
+  width: 100%;
+  min-width: 0;
+
+  border-radius: 20px;
+  background:
+    radial-gradient(700px 160px at 20% 20%, rgba(255,77,136,.18), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(255,255,255,.84));
+  border: 1px solid rgba(0,0,0,.12);
+  box-shadow: inset 0 10px 20px rgba(0,0,0,.06);
+
+  display: grid;
+  place-items: center;
+
+  position: relative;
+  overflow: hidden;
+}
+
+    .reelText{
+      font-family: var(--body);
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .reelGlow{
+      position:absolute;
+      inset: -40% -20%;
+      background: radial-gradient(circle at 40% 40%, rgba(255,122,168,.35), transparent 60%);
+      transform: rotate(12deg);
+      opacity:.65;
+      pointer-events:none;
+    }
+
+    .leverWrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding-left: 6px;
+    }
+
+    .lever{
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: linear-gradient(135deg, #ffffff, #f2f2f2);
+      box-shadow: 0 14px 30px rgba(0,0,0,.12);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease;
+    }
+    .lever:active{ transform: translateY(1px) scale(.99); }
+
+    .leverKnob{
+      width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--pink1), var(--pink2));
+      box-shadow: 0 10px 18px rgba(255,77,136,.35);
+    }
+
+    .pullText{
+      font-family: var(--body);
+      font-weight: 900;
+      font-size: 12px;
+      opacity:.75;
+      text-align:center;
+      line-height:1.15;
+      max-width: 70px;
+    }
+
+    .machineMsg{
+      margin-top: 14px;
+      font-family: var(--body);
+      font-size: 17px;
+      font-weight: 700;
+      opacity:.86;
+      min-height: 26px;
+    }
+
+    .winsPanel{
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 24px;
+      box-shadow: 0 18px 46px rgba(0,0,0,.10);
+      padding: 18px;
+      text-align:left;
+    }
+
+    .winsTitle{
+      font-family: var(--body);
+      font-weight: 900;
+      font-size: 18px;
+      margin: 0 0 10px;
+      opacity:.9;
+    }
+
+    .winsList{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .winItem{
+  position: relative;
+  padding: 14px 14px;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255,77,136,.10), rgba(255,255,255,.95));
+  border: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 12px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+.winItem{
+  position: relative;
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 12px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+/* soft pink edge glow */
+.winItem::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(600px 160px at 20% 20%, rgba(255,77,136,.14), transparent 55%);
+  pointer-events:none;
+}
+
+/* top-right stamp */
+.winItem .stamp{
+  position:absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--body);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: .14em;
+  opacity: .55;
+  text-transform: uppercase;
+}
+
+/* perforation */
+.winItem .perforation{
+  margin-top: 10px;
+  border-top: 1px dashed rgba(0,0,0,.18);
+  opacity: .7;
+}
+
+/* serial code */
+.winItem .code{
+  margin-top: 8px;
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .12em;
+  opacity: .55;
+}
+    .disabled{
+      opacity:.55 !important;
+      cursor:not-allowed !important;
+      filter: grayscale(.2);
+    }
+
+    /* spinning animation */
+    .spinning .reelText{
+      animation: spinText .12s linear infinite;
+    }
+    @keyframes spinText{
+      from{ transform: translateY(0); }
+      to{ transform: translateY(-8px); }
+    }
+
+    /* confetti */
+    .confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .confetti i{
+      position:absolute;
+      width:10px; height:14px;
+      opacity:.95;
+      border-radius:3px;
+      animation: pop 1.2s ease-out forwards;
+    }
+    @keyframes pop{
+      from{ transform: translateY(0) rotate(0deg); opacity:1;}
+      to{ transform: translateY(320px) rotate(420deg); opacity:0;}
+    }
+
+    /* Letter */
+    .letter{
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: 0 14px 30px rgba(0,0,0,.10);
+      text-align:left;
+    }
+    .letter h2{
+      font-family: var(--body);
+      font-weight: 900;
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+    .letter p{
+      font-family: var(--body);
+      font-weight: 650;
+      margin: 10px 0;
+      line-height:1.55;
+      opacity:.92;
+      font-size: 16.5px;
+    }
+    .sig{
+      font-family: var(--body);
+      font-weight: 900;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 1000px){
+      .lottoWrap{ grid-template-columns: 1fr; }
+      .reel{ min-width: 0; }
+    }
+    @media (max-width: 720px){
+      .title{ font-size: 62px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app">
+
+    <!-- Stage 1: Intro -->
+    <section class="stage active fadeIn" id="stage1">
+      <h1 class="title">Hi Dudu,</h1>
+      <div class="subtitle">I have a question for you.</div>
+      <div class="hint">(click anywhere)</div>
+    </section>
+
+    <!-- Stage 2: Question -->
+    <section class="stage" id="stage2">
+      <h1 class="title">Will you be my Valentine?</h1>
+
+      <div class="btnRow" id="btnRow">
+        <button class="yes" id="yesBtn">Yes</button>
+        <button class="no" id="noBtn">No</button>
+      </div>
+
+      <div class="hint">I’d like to see you try to say no</div>
+    </section>
+
+    <!-- Stage 3: Lotto Machine -->
+    <section class="stage" id="stage3">
+      <h1 class="title">In honor of our upcoming trip, play some slots.</h1>
+      <div class="subtitle">Pull the lever and collect your rewards.</div>
+
+      <div class="lottoWrap">
+        <div class="machine" id="machine">
+          <div class="machineTop">
+            <div class="machineTitle">Love Lotto</div>
+          </div>
+
+          <div class="slotFrame">
+            <div class="reelsRow">
+              <div class="reel" id="reel1">
+                <div class="reelGlow"></div>
+                <div class="reelText" id="r1">♥</div>
+              </div>
+              <div class="reel" id="reel2">
+                <div class="reelGlow"></div>
+                <div class="reelText" id="r2">♥</div>
+              </div>
+              <div class="reel" id="reel3">
+                <div class="reelGlow"></div>
+                <div class="reelText" id="r3">♥</div>
+              </div>
+
+              <div class="leverWrap">
+                <div class="lever" id="lever" aria-label="Pull lever">
+                  <div class="leverKnob"></div>
+                </div>
+                <div class="pullText">PULL<br/>LEVER</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="machineMsg" id="machineMsg">Ready when you are.</div>
+        </div>
+
+        <aside class="winsPanel">
+          <h3 class="winsTitle">Your rewards</h3>
+          <ul class="winsList" id="winsList"></ul>
+          <div class="hint" id="cashoutMsg" style="display:none; margin-top:14px; opacity:.8;">
+            You collected all 5. Take a screenshot to redeem it with me!
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Stage 4: Letter -->
+    <section class="stage" id="stage4">
+      <h1 class="title">One last thing…</h1>
+
+      <div class="letter">
+        <h2>A letter for you</h2>
+        <p>Hi my love,</p>
+        <p>
+          Haapy Valentines. I love you so much - The kind of “so much” that makes me build you a whole website and rig a slots machine, 
+          so you can’t lose. I'll always find a way to make us win baby.
+        </p>
+        <p>
+          Thank you for being my favorite person.
+          I’m really grateful for all you do.
+        </p>
+        <p class="sig">Love, Urvi</p>
+        <p style="opacity:.7; font-size:14px; margin-top:12px;">
+          (P.S. Screenshot this. It’s legally binding.)
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // ===== Background hearts =====
+    const HEARTS = ["💗","💞","💖","💕","❤️"];
+    for(let i=0;i<22;i++){
+      const h=document.createElement("div");
+      h.className="heart";
+      h.textContent=HEARTS[Math.floor(Math.random()*HEARTS.length)];
+      h.style.left = Math.random()*100 + "vw";
+      h.style.bottom = (-10 - Math.random()*40) + "vh";
+      h.style.animationDuration = (7 + Math.random()*8) + "s";
+      h.style.animationDelay = (Math.random()*4) + "s";
+      h.style.setProperty("--drift", (Math.random()*160 - 80) + "px");
+      h.style.fontSize = (14 + Math.random()*22) + "px";
+      document.body.appendChild(h);
+    }
+
+    // ===== Stage switching helpers =====
+    const stage1 = document.getElementById("stage1");
+    const stage2 = document.getElementById("stage2");
+    const stage3 = document.getElementById("stage3");
+    const stage4 = document.getElementById("stage4");
+
+    function showStage(stageToShow){
+      [stage1, stage2, stage3, stage4].forEach(s => s.classList.remove("active","fadeIn","fadeOut"));
+      stageToShow.classList.add("active","fadeIn");
+    }
+
+    // Intro -> Question: click anywhere (once)
+    document.addEventListener("click", () => {
+      if(!stage1.classList.contains("active")) return;
+      stage1.classList.add("fadeOut");
+      setTimeout(() => showStage(stage2), 320);
+    }, { once: true });
+
+    // ===== No button dodge (translate-based) =====
+    const noBtn = document.getElementById("noBtn");
+    const btnRow = document.getElementById("btnRow");
+    const yesBtn = document.getElementById("yesBtn");
+
+    function dodge(fromX, fromY){
+      const row = btnRow.getBoundingClientRect();
+      const noRect = noBtn.getBoundingClientRect();
+
+      const cx = fromX - row.left;
+      const cy = fromY - row.top;
+
+      const bx = (noRect.left - row.left) + noRect.width / 2;
+      const by = (noRect.top  - row.top ) + noRect.height / 2;
+
+      let vx = bx - cx;
+      let vy = by - cy;
+
+      if (Math.hypot(vx, vy) < 1) {
+        vx = (Math.random() - 0.5);
+        vy = (Math.random() - 0.5);
+      }
+
+      const mag = Math.hypot(vx, vy);
+      vx /= mag; vy /= mag;
+
+      const jump = 120;
+      let nx = vx * jump + (Math.random()*20 - 10);
+      let ny = vy * 55   + (Math.random()*16 - 8);
+
+      nx = Math.max(-220, Math.min(220, nx));
+      ny = Math.max(-80,  Math.min(80,  ny));
+
+      noBtn.style.setProperty("--nx", nx + "px");
+      noBtn.style.setProperty("--ny", ny + "px");
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      if(!stage2.classList.contains("active")) return;
+
+      const b = noBtn.getBoundingClientRect();
+      const bx = b.left + b.width/2;
+      const by = b.top  + b.height/2;
+
+      const dist = Math.hypot(e.clientX - bx, e.clientX - bx, e.clientY - by);
+      if (dist < 110) dodge(e.clientX, e.clientY);
+    });
+
+    noBtn.addEventListener("mouseenter", (e) => dodge(e.clientX, e.clientY));
+    noBtn.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      dodge(t.clientX, t.clientY);
+      e.preventDefault();
+    }, { passive: false });
+
+    noBtn.addEventListener("click", () => {
+      noBtn.textContent = "No";
+    });
+
+    // Yes -> Lotto
+    yesBtn.addEventListener("click", () => {
+      showStage(stage3);
+      burstConfetti(18);
+    });
+
+    // ===== Lotto Machine =====
+    const lever = document.getElementById("lever");
+    const machine = document.getElementById("machine");
+    const machineMsg = document.getElementById("machineMsg");
+    const winsList = document.getElementById("winsList");
+    const cashoutMsg = document.getElementById("cashoutMsg");
+
+    const r1 = document.getElementById("r1");
+    const r2 = document.getElementById("r2");
+    const r3 = document.getElementById("r3");
+
+    const PRIZES = [
+      { title: "Unlimited Kisses Pass", desc: "Redeemable anytime, anywhere. No expiry. No cap." },
+      { title: "Your Wildest Fantasy", desc: "You name it. I’ll obey ;)  No judgement." },
+      { title: "Bollywood Movie Date — Director’s Cut", desc: "You choose the film. I’ll watch seriously. No phones. I'll even give you appropriate reactions." },
+      { title: "420", desc: "Whatever you want to do, flying high hehehe" },
+      { title: "Pizza Night — Fully Sponsored", desc: "You pick the toppings. I pay. You relax. No arguments." }
+    ];
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i=a.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    const prizeQueue = shuffle(PRIZES);
+
+    let maxWins = 5;
+    let wins = 0;
+    let pullsSinceLastWin = 0;
+    let requiredPulls = (Math.random() < 0.5 ? 3 : 4);
+
+    const SYMBOLS = ["♥","♦","♣","♠","★","7","✦","✧"];
+    let spinning = false;
+
+    function setReels(a,b,c){
+      r1.textContent = a;
+      r2.textContent = b;
+      r3.textContent = c;
+    }
+
+    function startSpin(finalSymbol = null){
+      machine.classList.add("spinning");
+      spinning = true;
+      let t = 0;
+
+      const spinTimer = setInterval(() => {
+        t += 1;
+        setReels(
+          SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
+          SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
+          SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)]
+        );
+        if(t > 16){
+          clearInterval(spinTimer);
+          if(finalSymbol){
+            setReels(finalSymbol, finalSymbol, finalSymbol);
+          }
+          machine.classList.remove("spinning");
+          spinning = false;
+        }
+      }, 120);
+
+      return new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    function addWin(prize){
+      const li = document.createElement("li");
+      li.className = "winItem";
+      li.innerHTML = `
+        <div class="wTitle">${prize.title}</div>
+        <div class="wDesc">${prize.desc}</div>
+      `;
+      winsList.appendChild(li);
+
+      wins += 1;
+      burstConfetti(24);
+
+      if (wins >= maxWins){
+  machineMsg.textContent = "You collected all 5.";
+  lever.classList.add("disabled");
+  lever.setAttribute("aria-disabled","true");
+
+  showNextButton();
+}
+    }
+
+    lever.addEventListener("click", async () => {
+      if(!stage3.classList.contains("active")) return;
+      if (spinning) return;
+      if (wins >= maxWins) return;
+
+      pullsSinceLastWin += 1;
+      machineMsg.textContent = "Spinning…";
+
+      const isWin = (pullsSinceLastWin >= requiredPulls);
+
+      if (isWin){
+        const jackpotSymbol = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+        await startSpin(jackpotSymbol);
+
+        const prize = prizeQueue.shift();
+        machineMsg.textContent = "JACKPOT. You won something suspiciously perfect.";
+        addWin(prize);
+
+        pullsSinceLastWin = 0;
+        requiredPulls = (Math.random() < 0.5 ? 3 : 4);
+
+      } else {
+        await startSpin();
+        const tease = [
+          " Pull again baby .",
+          "So close… keep going ;).",
+          "Don't stop baby ;).",
+          "Try again dudu."
+        ];
+        machineMsg.textContent = tease[Math.floor(Math.random()*tease.length)];
+      }
+    });
+    function showNextButton(){
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Screenshot to cash these out with me 💌";
+  nextBtn.className = "yes";
+  nextBtn.id = "nextStageBtn";
+
+  nextBtn.style.marginTop = "20px";
+  nextBtn.style.width = "100%";
+
+  nextBtn.addEventListener("click", () => {
+    showStage(stage4);
+  });
+
+  document.querySelector(".winsPanel").appendChild(nextBtn);
+}
+    // ===== Confetti =====
+    function burstConfetti(count = 18){
+      const wrap = document.createElement("div");
+      wrap.className = "confetti";
+      document.getElementById("app").appendChild(wrap);
+
+      const rect = document.getElementById("app").getBoundingClientRect();
+      for(let i=0;i<count;i++){
+        const piece = document.createElement("i");
+        piece.style.left = (Math.random() * rect.width) + "px";
+        piece.style.top  = (10 + Math.random()*60) + "px";
+        piece.style.background = `hsl(${Math.floor(Math.random()*360)} 90% 65%)`;
+        piece.style.transform = `rotate(${Math.random()*180}deg)`;
+        piece.style.animationDelay = (Math.random()*0.08) + "s";
+        wrap.appendChild(piece);
+      }
+      setTimeout(()=> wrap.remove(), 1400);
+    }
+
+    // initial reels
+    setReels("♥","♦","♥");
+  </script>
+</body>
+</html>
